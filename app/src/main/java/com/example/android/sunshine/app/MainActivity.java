@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -128,13 +129,15 @@ public class MainActivity extends ActionBarActivity {
                     "Tue 2/8 - Rainy - 30/27",
                     "Wed 3/8 - Rainy - 30/27"
             };
-            List<String> weekForecast = new ArrayList<String>(Arrays.asList(data));
+            List<String> weekForecast = new ArrayList<>(Arrays.asList(data));
             mForecastAdapter =
-                    new ArrayAdapter<String>(
+                    new ArrayAdapter<>(
                             getActivity(), // The current context (this activity)
                             R.layout.list_item_forecast, // The name of the layout ID.
                             R.id.list_item_forecast_textview, // The ID of the textview to populate.
                             weekForecast);
+            ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
+            listView.setAdapter(mForecastAdapter);
             return rootView;
         }
     }
