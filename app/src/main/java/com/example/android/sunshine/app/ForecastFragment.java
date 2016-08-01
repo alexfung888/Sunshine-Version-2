@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +25,7 @@ import java.util.List;
  */
 public class ForecastFragment extends Fragment {
 
-    ArrayAdapter<String> mForecastAdapter;
+    private ArrayAdapter<String> mForecastAdapter;
 
     public ForecastFragment() {
     }
@@ -55,18 +54,23 @@ public class ForecastFragment extends Fragment {
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mForecastAdapter);
 
+        /*
         URL url = null;
         try {
-            url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7");
+            url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7&appid=" + @string/OPEN_WEATHER_MAP_API_KEY );
         } catch (MalformedURLException e) {
             Log.e("ForecastFragment", "Error: IOException ", e);
         }
         new fetchWeatherTask().execute(url);
+        */
 
         return rootView;
     }
 
     private class fetchWeatherTask extends AsyncTask<URL, Void, String> {
+
+        private final String LOG_TAG = fetchWeatherTask.class.getSimpleName();
+
         protected String doInBackground(URL... urls) {
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
@@ -82,6 +86,10 @@ public class ForecastFragment extends Fragment {
                 urlConnection.connect();
 
                 InputStream inputStream = urlConnection.getInputStream();
+                if (inputStream == null) {
+                    // nothing to do
+                    return null;
+                }
                 StringBuilder builder   = new StringBuilder();
                 reader                  = new BufferedReader(new InputStreamReader(inputStream));
 
@@ -90,9 +98,15 @@ public class ForecastFragment extends Fragment {
                     builder.append(line).append("\n");
                 }
 
+                if (builder.length() == 0) {
+                    // nothing to do
+                    return null;
+                }
+
                 forecastJsonStr = builder.toString();
             } catch (IOException e) {
-                Log.e("ForecastFragment", "Error: IOException ", e);
+                Log.e(LOG_TAG, "Error: IOException ", e);
+                return null;
             } finally {
                 if (urlConnection != null) {
                     urlConnection.disconnect();
@@ -101,7 +115,8 @@ public class ForecastFragment extends Fragment {
                     try {
                         reader.close();
                     } catch (final IOException e) {
-                        Log.e("ForecastFragment", "Error closing stream", e);
+                        Log.e(LOG_TAG, "Error closing stream", e);
+                        return null;
                     }
                 }
             }
