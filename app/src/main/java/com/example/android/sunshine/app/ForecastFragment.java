@@ -22,6 +22,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -52,18 +53,17 @@ public class ForecastFragment extends Fragment {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
 
-        /*
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
+            new fetchWeatherTask().execute();
             return true;
         }
         return super.onOptionsItemSelected(item);
-        */
 
-        // code analysis suggested rewrite into:
+        // code analysis suggested rewrite the original empty action into:
         // return id == R.id.action_refresh || super.onOptionsItemSelected(item);
         // which is
-        return  item.getItemId() == R.id.action_refresh || super.onOptionsItemSelected(item);
+        // return  item.getItemId() == R.id.action_refresh || super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -121,6 +121,10 @@ public class ForecastFragment extends Fragment {
                 String apiKey = "&APPID=" + BuildConfig.OPEN_WEATHER_MAP_API_KEY;
                 URL url = new URL(baseUrl.concat(apiKey));
 
+                Properties systemProperties = System.getProperties();
+                systemProperties.setProperty("http.proxyHost","wch-tmg02.edb.local");
+                systemProperties.setProperty("http.proxyPort","8080");
+
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
@@ -144,6 +148,7 @@ public class ForecastFragment extends Fragment {
                 }
 
                 forecastJsonStr = builder.toString();
+                Log.v(LOG_TAG, "Retrieved: " + forecastJsonStr);
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error: IOException ", e);
                 return null;
@@ -170,7 +175,11 @@ public class ForecastFragment extends Fragment {
         */
 
         protected void onPostExecute(String result) {
-            Log.v("Retrieved: ", result);
+            if (result == null) {
+                Log.e(LOG_TAG, "Retrieval failed");
+            } else {
+                Log.v(LOG_TAG, "Post Execute not null");
+            }
         }
     }
 }
