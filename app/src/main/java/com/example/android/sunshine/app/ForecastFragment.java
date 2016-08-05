@@ -121,6 +121,7 @@ public class ForecastFragment extends Fragment {
                 String apiKey = "&APPID=" + BuildConfig.OPEN_WEATHER_MAP_API_KEY;
                 URL url = new URL(baseUrl.concat(apiKey));
 
+                // no idea why it is necessary, proxy setting already in gradle properties
                 Properties systemProperties = System.getProperties();
                 systemProperties.setProperty("http.proxyHost","wch-tmg02.edb.local");
                 systemProperties.setProperty("http.proxyPort","8080");
