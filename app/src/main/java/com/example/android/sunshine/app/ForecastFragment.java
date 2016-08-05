@@ -1,5 +1,6 @@
 package com.example.android.sunshine.app;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -117,9 +118,21 @@ public class ForecastFragment extends Fragment {
             String forecastJsonStr = null;
 
             try {
-                String baseUrl = "http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7";
-                String apiKey = "&APPID=" + BuildConfig.OPEN_WEATHER_MAP_API_KEY;
-                URL url = new URL(baseUrl.concat(apiKey));
+                //String baseUrl = "http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7";
+                //String apiKey = "&APPID=" + BuildConfig.OPEN_WEATHER_MAP_API_KEY;
+                //URL url = new URL(baseUrl.concat(apiKey));
+
+                Uri.Builder uriBuilder = new Uri.Builder();
+                uriBuilder.scheme("http");
+                uriBuilder.path("//api.openweathermap.org/data/2.5/forecast/daily");
+                uriBuilder.appendQueryParameter("q","94043");
+                uriBuilder.appendQueryParameter("mode", "json");
+                uriBuilder.appendQueryParameter("units", "metric");
+                uriBuilder.appendQueryParameter("cnt","7");
+                uriBuilder.appendQueryParameter("APPID", BuildConfig.OPEN_WEATHER_MAP_API_KEY);
+                Log.v(LOG_TAG, uriBuilder.toString());
+                URL url = new URL(uriBuilder.toString());
+
 
                 // no idea why it is necessary, proxy setting already in gradle properties
                 Properties systemProperties = System.getProperties();
@@ -177,9 +190,9 @@ public class ForecastFragment extends Fragment {
 
         protected void onPostExecute(String result) {
             if (result == null) {
-                Log.e(LOG_TAG, "Retrieval failed");
+                Log.e(LOG_TAG, "Retrieval failed.");
             } else {
-                Log.v(LOG_TAG, "Post Execute not null");
+                Log.v(LOG_TAG, "Post Execute successful.");
             }
         }
     }
