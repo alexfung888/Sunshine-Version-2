@@ -36,7 +36,7 @@ import java.util.Properties;
  */
 public class ForecastFragment extends Fragment {
 
-    private ArrayAdapter<String> mForecastAdapter;
+    protected ArrayAdapter<String> mForecastAdapter;
 
     public ForecastFragment() {
     }
@@ -60,7 +60,8 @@ public class ForecastFragment extends Fragment {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
 
-        final String zip = "94043"; // Mountain View, CA
+        // final String zip = "94043"; // Mountain View, CA
+        final String zip = "8223932"; // Hong Kong
 
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
@@ -160,7 +161,7 @@ public class ForecastFragment extends Fragment {
 
                 URL url = new URL(builtUri.toString());
 
-                Log.v(LOG_TAG, "Built URI " + builtUri.toString());
+                // Log.v(LOG_TAG, "Built URI " + builtUri.toString());
 
                 // no idea why it is necessary, proxy setting already in gradle properties
                 Properties systemProperties = System.getProperties();
@@ -190,7 +191,7 @@ public class ForecastFragment extends Fragment {
                 }
 
                 forecastJsonStr = builder.toString();
-                Log.v(LOG_TAG, "Retrieved: " + forecastJsonStr);
+                // Log.v(LOG_TAG, "Retrieved: " + forecastJsonStr);
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error: IOException ", e);
                 return null;
@@ -228,7 +229,15 @@ public class ForecastFragment extends Fragment {
             if (result == null) {
                 Log.e(LOG_TAG, "Retrieval failed.");
             } else {
-                Log.v(LOG_TAG, "Post Execute successful.");
+                // Log.v(LOG_TAG, "Post Execute successful.");
+                mForecastAdapter.clear();
+                // List<String> weekForecast = new ArrayList<>(Arrays.asList(result));
+                // mForecastAdapter.addAll(weekForecast);
+                // text book answer loops to add(), instead of addAll()
+                // addAll() requires SDK v11 (honeycomb)
+                for(String dayForecastStr : result) {
+                    mForecastAdapter.add(dayForecastStr);
+                }
             }
         }
 
@@ -238,7 +247,8 @@ public class ForecastFragment extends Fragment {
         private String getReadableDateString(long time){
             // Because the API returns a unix timestamp (measured in seconds),
             // it must be converted to milliseconds in order to be converted to valid date.
-            SimpleDateFormat shortenedDateFormat = new SimpleDateFormat("EEE MMM dd");
+            //SimpleDateFormat shortenedDateFormat = new SimpleDateFormat("EEE MMM dd");
+            SimpleDateFormat shortenedDateFormat = new SimpleDateFormat("EEE d MMMM");
             return shortenedDateFormat.format(time);
         }
 
@@ -324,9 +334,11 @@ public class ForecastFragment extends Fragment {
                 resultStrs[i] = day + " - " + description + " - " + highAndLow;
             }
 
+            /*
             for (String s : resultStrs) {
                 Log.v(LOG_TAG, "Forecast entry: " + s);
             }
+            */
             return resultStrs;
 
         }
