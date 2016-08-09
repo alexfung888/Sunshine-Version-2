@@ -36,7 +36,7 @@ import java.util.Properties;
  */
 public class ForecastFragment extends Fragment {
 
-    protected ArrayAdapter<String> mForecastAdapter;
+    private ArrayAdapter<String> mForecastAdapter;
 
     public ForecastFragment() {
     }
@@ -233,13 +233,17 @@ public class ForecastFragment extends Fragment {
                 mForecastAdapter.clear();
                 // List<String> weekForecast = new ArrayList<>(Arrays.asList(result));
                 // mForecastAdapter.addAll(weekForecast);
-                // text book answer loops to add(), instead of addAll()
-                // addAll() requires SDK v11 (honeycomb)
-                // addAll() is better because listView updated only once
-                // OTOh add() refreshes after each string
+                // List<String> weekForecast = new ArrayList<>(Arrays.asList(result));
+                mForecastAdapter.addAll(new ArrayList<>(Arrays.asList(result)));
+                /*
+                text book answer loops to add(), instead of addAll()
+                addAll() requires SDK v11 (honeycomb)
+                addAll() is better because listView updated only once
+                OTOh add() refreshes after each string
                 for(String dayForecastStr : result) {
                     mForecastAdapter.add(dayForecastStr);
                 }
+                */
             }
         }
 
