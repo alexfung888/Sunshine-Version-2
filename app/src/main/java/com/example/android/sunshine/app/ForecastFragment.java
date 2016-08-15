@@ -12,8 +12,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -100,15 +102,14 @@ public class ForecastFragment extends Fragment {
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mForecastAdapter);
 
-        /*
-        URL url = null;
-        try {
-            url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7&appid=" + @string/OPEN_WEATHER_MAP_API_KEY );
-        } catch (MalformedURLException e) {
-            Log.e("ForecastFragment", "Error: IOException ", e);
-        }
-        new fetchWeatherTask().execute();
-        */
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Toast.makeText(getActivity(), (CharSequence) adapterView.getItemAtPosition(i) , Toast.LENGTH_LONG).show();
+            }
+        });
+
+
 
         return rootView;
     }
