@@ -107,7 +107,7 @@ public class ForecastFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 // Toast.makeText(getActivity(), (CharSequence) adapterView.getItemAtPosition(i) , Toast.LENGTH_LONG).show();
                 Intent detailIntent = new Intent(getActivity(), DetailActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT, (CharSequence) adapterView.getItemAtPosition(i));
+                        .putExtra(Intent.EXTRA_TEXT, (String) adapterView.getItemAtPosition(i));
                 startActivity(detailIntent);
             }
         });
