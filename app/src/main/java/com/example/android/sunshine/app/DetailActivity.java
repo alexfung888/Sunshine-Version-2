@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class DetailActivity extends ActionBarActivity {
 
@@ -57,6 +58,8 @@ public class DetailActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Toast.makeText(this, (CharSequence) "Detail Activity got settings", Toast.LENGTH_LONG).show();
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
 

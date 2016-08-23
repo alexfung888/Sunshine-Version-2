@@ -70,6 +70,7 @@ public class ForecastFragment extends Fragment {
             new fetchWeatherTask().execute(zip);
             return true;
         }
+
         return super.onOptionsItemSelected(item);
 
         // code analysis suggested rewrite the original empty action into:
