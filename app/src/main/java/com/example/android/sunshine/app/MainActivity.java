@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -51,7 +50,7 @@ public class MainActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Toast.makeText(this, (CharSequence) "Main Activity got settings", Toast.LENGTH_LONG).show();
+            // Toast.makeText(this, (CharSequence) "Main Activity got settings", Toast.LENGTH_LONG).show();
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }

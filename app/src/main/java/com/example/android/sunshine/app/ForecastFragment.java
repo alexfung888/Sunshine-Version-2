@@ -1,9 +1,11 @@
 package com.example.android.sunshine.app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
 import android.util.Log;
@@ -32,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+
 
 /**
  * A placeholder fragment containing a simple view.
@@ -63,7 +66,9 @@ public class ForecastFragment extends Fragment {
         // as you specify a parent activity in AndroidManifest.xml.
 
         // final String zip = "94043"; // Mountain View, CA
-        final String zip = "8223932"; // Hong Kong
+        // final String zip = "8223932"; // Hong Kong
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String zip = sharedPref.getString(getString(R.string.pref_location_key),"");
 
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
@@ -149,9 +154,20 @@ public class ForecastFragment extends Fragment {
 
                 Uri.Builder uriBuilder = new Uri.Builder();
                 final String FORECAST_BASE_URL = "http://api.openweathermap.org/data/2.5/forecast/daily?";
-                final String QUERY_PARAM_ZIP = "q";
+                final String QUERY_PARAM_Q = "q";
                 final String QUERY_PARAM_ID = "id";
-                final String QUERY_PARAM = (params[0].length() == 5)? QUERY_PARAM_ZIP : QUERY_PARAM_ID;
+                final String QUERY_PARAM_ZIP = "zip";
+                final String QUERY_PARAM;
+                if (params[0].matches("\\d+")) {
+                    QUERY_PARAM = (params[0].length() == 5)? QUERY_PARAM_Q : QUERY_PARAM_ID;
+                    // it seems q=zip is interpreted as US ZIP code
+                    // a real zip argument should look zip=94043,us
+                    // this is not possible here, because the comma will be encoded by addQueryParameter()
+                    // and the resulting %2c is not accepted by the API (requires a real comma in the URL)
+                } else {
+                    QUERY_PARAM = QUERY_PARAM_Q;
+                }
+
                 final String FORMAT_PARAM = "mode";
                 final String UNITS_PARAM = "units";
                 final String DAYS_PARAM = "cnt";
@@ -294,7 +310,18 @@ public class ForecastFragment extends Fragment {
             final String OWM_DESCRIPTION = "main";
 
             JSONObject forecastJson = new JSONObject(forecastJsonStr);
-            JSONArray weatherArray = forecastJson.getJSONArray(OWM_LIST);
+            //JSONArray weatherArray = forecastJson.getJSONArray(OWM_LIST);
+            JSONArray weatherArray = forecastJson.optJSONArray(OWM_LIST);
+            if (weatherArray == null) {
+                // error
+                //forecastJson.getString("cod"); error code
+                //forecastJson.getString("message"); error message
+                Log.e(LOG_TAG, "Retrieval error. Code=" + forecastJson.getString("cod") + ". Message=" + forecastJson.getString("message"));
+                return null;
+            } else {
+                JSONObject forecastCity = forecastJson.getJSONObject("city");
+                Log.v(LOG_TAG, "Successfully retrieved forecast for " + forecastCity.getString("name") + " of " + forecastCity.getString("country"));
+            }
 
             // OWM returns daily forecasts based upon the local time of the city that is being
             // asked for, which means that we need to know the GMT offset to translate this data
