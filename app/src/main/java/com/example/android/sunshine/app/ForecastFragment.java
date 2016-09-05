@@ -67,12 +67,12 @@ public class ForecastFragment extends Fragment {
 
         // final String zip = "94043"; // Mountain View, CA
         // final String zip = "8223932"; // Hong Kong
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String zip = sharedPref.getString(getString(R.string.pref_location_key),"");
 
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            new fetchWeatherTask().execute(zip);
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String location = sharedPref.getString(getString(R.string.pref_location_key),getString(R.string.pref_location_default));
+            new fetchWeatherTask().execute(location);
             return true;
         }
 
