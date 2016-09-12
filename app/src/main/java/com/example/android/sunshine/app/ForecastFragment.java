@@ -28,10 +28,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.Properties;
 
 
@@ -130,8 +135,6 @@ public class ForecastFragment extends Fragment {
             }
         });
 
-
-
         return rootView;
     }
 
@@ -140,6 +143,24 @@ public class ForecastFragment extends Fragment {
         private final String LOG_TAG = fetchWeatherTask.class.getSimpleName();
 
         private final int numDays = 7;
+
+        private InetAddress ip() throws SocketException {
+            Enumeration<NetworkInterface> nis = NetworkInterface.getNetworkInterfaces();
+            NetworkInterface ni;
+            while (nis.hasMoreElements()) {
+                ni = nis.nextElement();
+                if (!ni.isLoopback()/*not loopback*/ && ni.isUp()/*it works now*/) {
+                    for (InterfaceAddress ia : ni.getInterfaceAddresses()) {
+                        //filter for ipv4/ipv6
+                        if (ia.getAddress().getAddress().length == 4) {
+                            //4 for ipv4, 16 for ipv6
+                            return ia.getAddress();
+                        }
+                    }
+                }
+            }
+            return null;
+        }
 
 
         protected String[] doInBackground(String... params) {
@@ -194,15 +215,39 @@ public class ForecastFragment extends Fragment {
 
                 URL url = new URL(builtUri.toString());
 
-                // Log.v(LOG_TAG, "Built URI " + builtUri.toString());
+                Log.v(LOG_TAG, "Built URI " + builtUri.toString());
+
+
+                String myIP="";
+                try {
+                    Log.v(LOG_TAG, "ip()=" + (myIP=ip().toString()));
+                } catch (SocketException e) {
+                    Log.e(LOG_TAG,"getIP results in exception", e);
+                }
+                if (myIP.startsWith("10.15.",1)) {
+                    // EDB WCH LAN
+                    Properties systemProperties = System.getProperties();
+                    systemProperties.setProperty("http.proxyHost","wch-tmg02.edb.local");
+                    systemProperties.setProperty("http.proxyPort","8080");
+                    Log.v(LOG_TAG, "proxy set to WCH LAN");
+                } else if (myIP.startsWith("192.168.20.",1)) {
+                    // 3042bb
+                    Properties systemProperties = System.getProperties();
+                    systemProperties.setProperty("http.proxyHost","192.168.20.250");
+                    systemProperties.setProperty("http.proxyPort","8080");
+                    Log.v(LOG_TAG, "proxy set to 3042bb");
+                } else {
+                    Log.v(LOG_TAG, "No proxy set");
+                }
+
 
                 // no idea why it is necessary, proxy setting already in gradle properties
-                Properties systemProperties = System.getProperties();
+                // Properties systemProperties = System.getProperties();
                 // LAN
                 //systemProperties.setProperty("http.proxyHost","wch-tmg02.edb.local");
                 // 3042bb
-                systemProperties.setProperty("http.proxyHost","192.168.20.250");
-                systemProperties.setProperty("http.proxyPort","8080");
+                // systemProperties.setProperty("http.proxyHost","192.168.20.250");
+                // systemProperties.setProperty("http.proxyPort","8080");
 
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
