@@ -102,20 +102,7 @@ public class ForecastFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        // Create some dummy data for the ListView.  Here's a sample weekly forecast
-        // no longer needed
-        /*
-        String[] data = {
-                "Today 28/7 Sunny - 33/28",
-                "Tomorrow 29/7 - Sunny - 33/28",
-                "Sat 30/7 - Sunny - 34/28",
-                "Sun 31/7 - Showers - 33/28",
-                "Mon 1/8 - Showers - 33/28",
-                "Tue 2/8 - Rainy - 30/27",
-                "Wed 3/8 - Rainy - 30/27"
-        };
-        List<String> weekForecast = new ArrayList<>(Arrays.asList(data));
-        */
+
         mForecastAdapter =
                 new ArrayAdapter<>(
                         getActivity(), // The current context (this activity)
